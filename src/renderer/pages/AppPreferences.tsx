@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { RotateCcw, Keyboard, Download, CheckCircle2, AlertCircle } from 'lucide-react'
 import {
   useTerminalFontFamily,
+  useTerminalCustomFontFamily,
   useTerminalFontSize,
   useTerminalBufferSize,
   useDefaultShell,
@@ -11,7 +12,7 @@ import {
   useOrphanDetectionTimeout
 } from '@/stores/app-settings-store'
 import { useUpdateAppSetting, useResetAppSettings } from '@/hooks/use-app-settings'
-import { FONT_FAMILY_OPTIONS, BUFFER_SIZE_OPTIONS, MAX_TERMINALS_OPTIONS, ORPHAN_TIMEOUT_OPTIONS } from '@/types/settings'
+import { FONT_FAMILY_OPTIONS, CUSTOM_FONT_VALUE, BUFFER_SIZE_OPTIONS, MAX_TERMINALS_OPTIONS, ORPHAN_TIMEOUT_OPTIONS } from '@/types/settings'
 import type { ShellInfo } from '@shared/types/ipc.types'
 import type { ProjectColor } from '@/types/project'
 import { availableColors, getColorClasses } from '@/lib/colors'
@@ -28,6 +29,7 @@ import { useUpdaterState, useUpdaterActions } from '@/stores/updater-store'
 
 export default function AppPreferences(): React.JSX.Element {
   const fontFamily = useTerminalFontFamily()
+  const customFontFamily = useTerminalCustomFontFamily()
   const fontSize = useTerminalFontSize()
   const bufferSize = useTerminalBufferSize()
   const defaultShell = useDefaultShell()
@@ -68,8 +70,29 @@ export default function AppPreferences(): React.JSX.Element {
     loadShells()
   }, [])
 
+  const isCustomFont = !FONT_FAMILY_OPTIONS.some(
+    (opt) => opt.value !== CUSTOM_FONT_VALUE && opt.value === fontFamily
+  )
+
   const handleFontFamilyChange = (value: string) => {
-    updateSetting('terminalFontFamily', value)
+    if (value === CUSTOM_FONT_VALUE) {
+      // Switch to custom mode - use existing custom value or empty
+      const customValue = customFontFamily || ''
+      updateSetting('terminalCustomFontFamily', customValue)
+      if (customValue) {
+        updateSetting('terminalFontFamily', customValue)
+      }
+    } else {
+      updateSetting('terminalFontFamily', value)
+      updateSetting('terminalCustomFontFamily', '')
+    }
+  }
+
+  const handleCustomFontChange = (value: string) => {
+    updateSetting('terminalCustomFontFamily', value)
+    if (value.trim()) {
+      updateSetting('terminalFontFamily', value)
+    }
   }
 
   const handleFontSizeChange = (value: number) => {
@@ -169,7 +192,7 @@ export default function AppPreferences(): React.JSX.Element {
                     Font Family
                   </label>
                   <select
-                    value={fontFamily}
+                    value={isCustomFont ? CUSTOM_FONT_VALUE : fontFamily}
                     onChange={(e) => handleFontFamilyChange(e.target.value)}
                     className="w-full bg-secondary/50 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow"
                   >
@@ -180,9 +203,29 @@ export default function AppPreferences(): React.JSX.Element {
                     ))}
                   </select>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Choose a monospace font for terminal text.
+                    Choose a monospace font for terminal text, or select &quot;Custom...&quot; to use any font.
                   </p>
                 </div>
+
+                {/* Custom Font Input */}
+                {isCustomFont && (
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-foreground mb-2">
+                      Custom Font Family
+                    </label>
+                    <input
+                      type="text"
+                      value={customFontFamily}
+                      onChange={(e) => handleCustomFontChange(e.target.value)}
+                      placeholder='e.g. "Hack Nerd Font", "Cascadia Code", monospace'
+                      className="w-full bg-secondary/50 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-shadow placeholder:text-muted-foreground/50"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Enter any CSS font-family value. Make sure the font is installed on your system.
+                      Use commas for fallbacks, e.g. &quot;MyFont&quot;, &quot;FallbackFont&quot;, monospace
+                    </p>
+                  </div>
+                )}
 
                 {/* Font Size */}
                 <div>
