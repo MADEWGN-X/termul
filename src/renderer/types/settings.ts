@@ -20,6 +20,7 @@ export const CONTEXT_BAR_SETTINGS_KEY = 'settings/context-bar'
 // Application-wide settings
 export interface AppSettings {
   terminalFontFamily: string
+  terminalCustomFontFamily: string // User-defined custom font family string
   terminalFontSize: number
   terminalBufferSize: number // Scrollback buffer size in lines
   defaultShell: string
@@ -38,15 +39,20 @@ export const BUFFER_SIZE_OPTIONS = [
   { value: 50000, label: '50,000 lines' }
 ]
 
+// Sentinel value for custom font selection
+export const CUSTOM_FONT_VALUE = '__custom__'
+
 // Font family options for terminal
 export const FONT_FAMILY_OPTIONS = [
+  { value: '"FiraCode Nerd Font Mono", "Fira Code", Menlo, monospace', label: 'Fira Code Nerd Font (Bundled)' },
   { value: 'Menlo, Monaco, "Courier New", monospace', label: 'Menlo' },
   { value: 'Monaco, Menlo, "Courier New", monospace', label: 'Monaco' },
   { value: 'Consolas, "Courier New", monospace', label: 'Consolas' },
   { value: '"Courier New", Courier, monospace', label: 'Courier New' },
   { value: '"Source Code Pro", Menlo, monospace', label: 'Source Code Pro' },
   { value: '"JetBrains Mono", Menlo, monospace', label: 'JetBrains Mono' },
-  { value: '"Fira Code", Menlo, monospace', label: 'Fira Code' }
+  { value: '"Fira Code", Menlo, monospace', label: 'Fira Code' },
+  { value: CUSTOM_FONT_VALUE, label: 'Custom...' }
 ]
 
 // Max terminals per project options
@@ -69,7 +75,8 @@ export const ORPHAN_TIMEOUT_OPTIONS = [
 
 // Default application settings
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  terminalFontFamily: 'Menlo, Monaco, "Courier New", monospace',
+  terminalFontFamily: '"FiraCode Nerd Font Mono", "Fira Code", Menlo, monospace',
+  terminalCustomFontFamily: '',
   terminalFontSize: 14,
   terminalBufferSize: 10000,
   defaultShell: '',
