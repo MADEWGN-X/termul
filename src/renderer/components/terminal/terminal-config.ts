@@ -35,7 +35,7 @@ export const TERMINAL_THEME: ITheme = {
 }
 
 export const DEFAULT_TERMINAL_OPTIONS: ITerminalOptions = {
-  fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+  fontFamily: '"FiraCode Nerd Font Mono", "Fira Code", Menlo, monospace',
   fontSize: 14,
   lineHeight: 1.2,
   theme: TERMINAL_THEME,

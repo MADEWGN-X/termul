@@ -14,7 +14,7 @@ describe('app-settings-store', () => {
   describe('initial state', () => {
     it('should have default font family', () => {
       const { settings } = useAppSettingsStore.getState()
-      expect(settings.terminalFontFamily).toBe('Menlo, Monaco, "Courier New", monospace')
+      expect(settings.terminalFontFamily).toBe('"FiraCode Nerd Font Mono", "Fira Code", Menlo, monospace')
     })
 
     it('should have default font size of 14', () => {
@@ -68,7 +68,7 @@ describe('app-settings-store', () => {
 
       const { settings } = useAppSettingsStore.getState()
       expect(settings.terminalFontSize).toBe(20)
-      expect(settings.terminalFontFamily).toBe('Menlo, Monaco, "Courier New", monospace')
+      expect(settings.terminalFontFamily).toBe('"FiraCode Nerd Font Mono", "Fira Code", Menlo, monospace')
       expect(settings.defaultShell).toBe('')
     })
   })
@@ -77,6 +77,7 @@ describe('app-settings-store', () => {
     it('should replace all settings and set isLoaded to true', () => {
       const newSettings = {
         terminalFontFamily: 'Monaco, Menlo, "Courier New", monospace',
+        terminalCustomFontFamily: '',
         terminalFontSize: 16,
         defaultShell: 'bash',
         terminalBufferSize: 10000,
@@ -101,6 +102,7 @@ describe('app-settings-store', () => {
       useAppSettingsStore.setState({
         settings: {
           terminalFontFamily: 'Fira Code',
+          terminalCustomFontFamily: 'Fira Code',
           terminalFontSize: 20,
           defaultShell: 'zsh',
           terminalBufferSize: 5000,
